@@ -2,6 +2,7 @@ import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as esbuild from 'esbuild'
+import * as crypto from 'crypto';
 //import open, { openApp, apps } from 'open';
 import { copy } from 'fs-extra';
 
@@ -39,7 +40,7 @@ async function openInBrowser(file: string) {
     /*
     This would be easier with: 
     import open, {openApp, apps} from 'open';
-    But we're targetting commonjs (cjs in tsup.config.ts), and open only supports ESM. 
+    But we're targetting commonjs (cjs in tsup.config.ts), and 'open' only supports ESM, so forced to use dynamic import. 
     */
     const { default: open } = await import('open');
         
@@ -47,9 +48,36 @@ async function openInBrowser(file: string) {
         
 }
 
-export default async function main(inputFile: string) {
+async function exec(inputFile: string) {
     const entryPoint = await createEntryPoint(inputFile);
     await bundleEntryPoint(entryPoint);
     await copyHtml();
     await openInBrowser(path.join(tempDirectory, 'index.html'));
+}
+
+async function getFileHash(filePath: string): Promise<string> {
+    const data = await fs.readFile(filePath);
+    const hash = crypto.createHash('sha256');
+    hash.update(data);
+    return hash.digest('hex');
+}
+
+export default async function main(inputFile: string, watch?: boolean) {
+    let fileHash = await getFileHash(inputFile);
+    await exec(inputFile);
+
+    if( watch ) {
+        console.log(`Watching for file changes on ${inputFile}`);
+        const watcher = fs.watch(inputFile);
+        for await (const event of watcher) {
+            if (event.eventType === 'change') {
+                const newFileHash = await getFileHash(inputFile);
+                if(newFileHash !== fileHash) {
+                    console.log(`${event.filename} file Changed `+Date.now());
+                    fileHash = newFileHash;
+                    await exec(inputFile)
+                }
+            }
+        }
+    }
 }

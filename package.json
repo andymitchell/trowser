@@ -15,7 +15,8 @@
     "access": "public"
   },
   "scripts": {
-    "test": "npx tsup && ./dist/cli.js ./test/basic.ts"
+    "run_local": "npx tsup && ./dist/cli.js --file ./test/basic.ts",
+    "run_local:watch": "npx tsup && ./dist/cli.js --file ./test/basic.ts --watch"
   },
   "author": "",
   "license": "ISC",
