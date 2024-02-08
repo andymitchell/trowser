@@ -7,8 +7,13 @@ import { copy } from 'fs-extra';
 
 const tempDirectory = path.join(os.tmpdir(), 'trowser');
 
+function absoluteAssetPath(assetFile:string) {
+    // __dirname is the script's directory, which when this is compiled will be ./dist 
+    return path.resolve(__dirname, `../static/${assetFile}`);
+}
+
 async function createEntryPoint(inputFile: string) {
-    const content = `import '${path.resolve('./src/assets/index.ts')}';
+    const content = `import '${absoluteAssetPath('./globalTestFunctions.ts')}';
 import '${path.resolve(inputFile)}';`;
     const entryPointPath = path.join(tempDirectory, 'entry.ts');
     
@@ -27,7 +32,7 @@ async function bundleEntryPoint(entryPointPath: string) {
 }
 
 async function copyHtml() {
-    await copy(path.resolve('./static/index.html'), path.join(tempDirectory, 'index.html'));
+    await copy(absoluteAssetPath('./index.html'), path.join(tempDirectory, 'index.html'));
 }
 
 async function openInBrowser(file: string) {
