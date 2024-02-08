@@ -19,7 +19,7 @@ import '${path.resolve(inputFile)}';`;
     const entryPointPath = path.join(tempDirectory, 'entry.ts');
     
     await fs.writeFile(entryPointPath, content);
-    console.log(`WRITTEN\n` + content);
+    //console.log(`WRITTEN\n` + content);
     return entryPointPath;
 }
 
@@ -29,7 +29,6 @@ async function bundleEntryPoint(entryPointPath: string) {
         outfile: path.join(tempDirectory, 'bundle.js'),
         bundle: true,
     });
-    console.log("Output bundle to: "+path.join(tempDirectory, 'bundle.js'));
 }
 
 async function copyHtml() {
@@ -48,11 +47,13 @@ async function openInBrowser(file: string) {
         
 }
 
-async function exec(inputFile: string) {
+async function exec(inputFile: string, open?:boolean) {
     const entryPoint = await createEntryPoint(inputFile);
     await bundleEntryPoint(entryPoint);
     await copyHtml();
-    await openInBrowser(path.join(tempDirectory, 'index.html'));
+    const finalFile = path.join(tempDirectory, 'index.html');
+    console.log(`Built ${finalFile}`);
+    if( open ) await openInBrowser(finalFile);
 }
 
 async function getFileHash(filePath: string): Promise<string> {
@@ -64,7 +65,7 @@ async function getFileHash(filePath: string): Promise<string> {
 
 export default async function main(inputFile: string, watch?: boolean) {
     let fileHash = await getFileHash(inputFile);
-    await exec(inputFile);
+    await exec(inputFile, true);
 
     if( watch ) {
         console.log(`Watching for file changes on ${inputFile}`);
@@ -73,9 +74,9 @@ export default async function main(inputFile: string, watch?: boolean) {
             if (event.eventType === 'change') {
                 const newFileHash = await getFileHash(inputFile);
                 if(newFileHash !== fileHash) {
-                    console.log(`${event.filename} file Changed `+Date.now());
+                    console.log(`${event.filename} file changed`);
                     fileHash = newFileHash;
-                    await exec(inputFile)
+                    await exec(inputFile);
                 }
             }
         }
