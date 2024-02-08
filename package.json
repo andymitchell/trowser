@@ -1,0 +1,19 @@
+{
+  "name": "@andyrmitchell/trowser",
+  "version": "1.0.0",
+  "description": "Run a test script in the browser",
+  "bin": {
+    "trowser": "./bin/runTest.sh"
+  },
+  "scripts": {
+    "test": "./bin/runTest.sh ./test/basic.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "esbuild": "^0.20.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
