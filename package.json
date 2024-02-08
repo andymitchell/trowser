@@ -15,6 +15,11 @@
     "access": "public"
   },
   "scripts": {
+    "build_release": "npm run build_prepare && np",
+    "build": "tsup",
+    "pkglint": "./build/publint_pipeable.sh",
+    "build_prepare": "npm run pkglint && npm run build",
+    "prepublishOnly": "npm run build_prepare",
     "run_local": "npx tsup && ./dist/cli.js --file ./test/basic.ts",
     "run_local:watch": "npx tsup && ./dist/cli.js --file ./test/basic.ts --watch"
   },
