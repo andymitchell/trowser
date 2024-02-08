@@ -22,8 +22,8 @@
     "pkglint": "./build/publint_pipeable.sh",
     "build_prepare": "npm run pkglint && npm run build",
     "prepublishOnly": "npm run build_prepare",
-    "local": "npx tsup && ./dist/cli.js --file ./test/basic.ts",
-    "local:watch": "npx tsup && ./dist/cli.js --file ./test/basic.ts --watch",
+    "test_basic": "npx tsup && ./dist/cli.js --file ./test/basic.ts",
+    "test_basic:watch": "npx tsup && ./dist/cli.js --file ./test/basic.ts --watch",
     "test": ""
   },
   "repository": {
@@ -35,9 +35,11 @@
   "dependencies": {
     "esbuild": "^0.20.0",
     "fs-extra": "^11.2.0",
+    "lodash-es": "^4.17.21",
     "open": "^10.0.3"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.11.16",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
