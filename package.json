@@ -2,26 +2,30 @@
   "name": "@andyrmitchell/trowser",
   "version": "0.1.2",
   "description": "Run a test script in the browser",
+  "bin": {
+    "trowser": "./dist/cli.js"
+  },
+  "type": "commonjs",
+  "main": "./dist/cli.js",
   "files": [
-    "bin",
-    "src",
-    "static"
+    "dist"
   ],
   "publishConfig": {
     "access": "public"
   },
-  "bin": {
-    "trowser": "./bin/runTest.sh"
-  },
   "scripts": {
-    "test": "./bin/runTest.sh ./test/basic.ts"
+    "test": "npx tsup && ./dist/cli.js ./test/basic.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "esbuild": "^0.20.0"
+    "esbuild": "^0.20.0",
+    "fs-extra": "^11.2.0",
+    "open": "^10.0.3"
   },
   "devDependencies": {
+    "@types/node": "^20.11.16",
+    "tsup": "^8.0.1",
     "typescript": "^5.3.3"
   }
 }
