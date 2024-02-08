@@ -9,7 +9,9 @@
   "main": "./dist/cli.js",
   "files": [
     "dist",
-    "static"
+    "static",
+    "LICENSE",
+    "README.md"
   ],
   "publishConfig": {
     "access": "public"
@@ -21,7 +23,8 @@
     "build_prepare": "npm run pkglint && npm run build",
     "prepublishOnly": "npm run build_prepare",
     "run_local": "npx tsup && ./dist/cli.js --file ./test/basic.ts",
-    "run_local:watch": "npx tsup && ./dist/cli.js --file ./test/basic.ts --watch"
+    "run_local:watch": "npx tsup && ./dist/cli.js --file ./test/basic.ts --watch",
+    "test": ""
   },
   "repository": {
     "type": "git",
