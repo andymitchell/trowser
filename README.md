@@ -39,6 +39,15 @@ npx trowser --file path/to/file.ts --watch
 
 ## Developing
 
+### Making changes and publishing 
+
+```bash 
+npm run build_release
+```
+
+#### Pre-requisites:
+- Run `npm install`
+- Have `np` installed globally 
 
 ### Quick decision log
 - Use tsup to convert src files to js

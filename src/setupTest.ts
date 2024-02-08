@@ -28,6 +28,7 @@ async function bundleEntryPoint(entryPointPath: string) {
         entryPoints: [entryPointPath],
         outfile: path.join(tempDirectory, 'bundle.js'),
         bundle: true,
+        sourcemap: true
     });
 }
 
