@@ -1,6 +1,6 @@
 {
   "name": "@andyrmitchell/trowser",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Run a test script in the browser",
   "files": [
     "bin",
