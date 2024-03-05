@@ -4,7 +4,6 @@ export default defineConfig({
   entry: ["src/cli.ts"],
   publicDir: false,
   clean: true,
-  sourcemap: true,
   minify: false,
   format: ['cjs'], // When this changes, update 'type' in package.json 
 });

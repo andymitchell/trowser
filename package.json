@@ -20,7 +20,7 @@
     "build_release": "npm run build_prepare && np",
     "build": "tsup",
     "pkglint": "./build/publint_pipeable.sh",
-    "build_prepare": "npm run pkglint && npm run build",
+    "build_prepare": "npm run build && npm run pkglint",
     "prepublishOnly": "npm run build_prepare",
     "test_basic": "npx tsup && ./dist/cli.js --file ./test/basic.ts",
     "test_basic:watch": "npx tsup && ./dist/cli.js --file ./test/basic.ts --watch",

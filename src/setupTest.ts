@@ -16,11 +16,20 @@ function absoluteAssetPath(assetFile:string) {
 async function createEntryPoint(inputFile: string) {
     const content = `import '${absoluteAssetPath('./globalTestFunctions.ts')}';
 import '${path.resolve(inputFile)}';`;
+
+
+    await fs.mkdir(tempDirectory, { recursive: true }); // Creates temp directory if it doesn't exist
     const entryPointPath = path.join(tempDirectory, 'entry.ts');
     
-    await fs.writeFile(entryPointPath, content);
-    //console.log(`WRITTEN\n` + content);
-    return entryPointPath;
+    try {
+        await fs.writeFile(entryPointPath, content);
+        console.log(`Created entry point at ${entryPointPath} ...\n ${content}`);
+        return entryPointPath;
+    } catch(e) {
+        console.warn(`Failed to write to ${entryPointPath}`);
+    }
+    
+    
 }
 
 async function bundleEntryPoint(entryPointPath: string) {
