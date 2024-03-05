@@ -17,20 +17,33 @@ window.test = async (testName: string, fn: () => void) => {
     }
 }
 
-window.expect = async (a: any) => {
-    await a;
-    return {
+
+window.expect = (a: any) => {
+    const state = {a};
+    const testers = {
         toBe: (b: any) => {
-            if (a !== b) {
+            if (state.a !== b) {
                 throw new Error(`Expected ${a} to be ${b}`);
             }
         },
         toEqual: (b: any) => {
-            if( !isEqual(a, b) ) {
-                throw new Error(`Expected ${JSON.stringify(a)} to be ${JSON.stringify(b)}`);
+            if( !isEqual(state.a, b) ) {
+                throw new Error(`Expected ${JSON.stringify(state.a)} to be ${JSON.stringify(b)}`);
             }
         }
     };
+
+    if( state.a instanceof Promise ) {
+        Object.keys(testers).forEach(key => {
+            const prev = testers[key];
+            testers[key] = async (...args:any[]) => {
+                state.a = await state.a;
+                return prev(...args);
+            }
+        });
+    }
+
+    return testers;
 }
 
 export {};
