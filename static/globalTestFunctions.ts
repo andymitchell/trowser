@@ -7,17 +7,18 @@ window.describe = (description: string, fn: () => void) => {
     fn();
 }
 
-window.test = (testName: string, fn: () => void) => {
+window.test = async (testName: string, fn: () => void) => {
     try {
-        console.log(`Test: ${testName}`);
-        fn();
-        console.log('Test passed');
+        console.log(`Test ${testName}`);
+        await fn();
+        console.log(`Test ${testName} passed`);
     } catch (error) {
         console.error(`Test failed: ${error}`);
     }
 }
 
-window.expect = (a: any) => {
+window.expect = async (a: any) => {
+    await a;
     return {
         toBe: (b: any) => {
             if (a !== b) {
