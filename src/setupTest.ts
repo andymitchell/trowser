@@ -23,10 +23,10 @@ import '${path.resolve(inputFile)}';`;
     
     try {
         await fs.writeFile(entryPointPath, content);
-        console.log(`Created entry point at ${entryPointPath} ...\n ${content}`);
+        console.log(`Created entry point at ${entryPointPath}`);
         return entryPointPath;
     } catch(e) {
-        console.warn(`Failed to write to ${entryPointPath}`);
+        console.warn(`Failed to write to ${entryPointPath}. Error: ${e?.message ?? ''}`);
     }
     
     
