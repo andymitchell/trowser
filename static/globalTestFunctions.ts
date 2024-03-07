@@ -7,16 +7,15 @@ window.describe = (description: string, fn: () => void) => {
     fn();
 }
 
-window.test = async (testName: string, fn: () => void) => {
+window.test = async (testName: string, fn: () => void | Promise<void>) => {
     try {
-        console.log(`Test ${testName}`);
+        console.log(`Testing '${testName}'`);
         await fn();
-        console.log(`Test ${testName} passed`);
+        console.log(`Test '${testName}' passed OK`);
     } catch (error) {
         console.error(`Test failed: ${error}`);
     }
 }
-
 
 window.expect = (a: any) => {
     const state = {a};

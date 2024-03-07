@@ -5,6 +5,8 @@ import * as esbuild from 'esbuild'
 import * as crypto from 'crypto';
 //import open, { openApp, apps } from 'open';
 import { copy } from 'fs-extra';
+import chokidar = require('chokidar');
+//import chokidar from 'chokidar';
 
 const tempDirectory = path.join(os.tmpdir(), 'trowser');
 
@@ -77,6 +79,17 @@ export default async function main(inputFile: string, watch?: boolean) {
     let fileHash = await getFileHash(inputFile);
     await exec(inputFile, true);
 
+    if (watch) {
+        console.log(`Watching for file changes in . and its sub directories.`);
+        const watcher = chokidar.watch('.', { ignored: /(^|[\/\\])\../ }); // '.' to watch the current directory and its subdirectories, ignoring dotfiles
+
+        watcher.on('change', async (path) => {
+            console.log(`${path} file changed`);
+            await exec(inputFile); // Consider whether you want to pass the changed `path` instead of `inputFile` to exec depending on your use case
+        });
+    }
+
+    /*
     if( watch ) {
         console.log(`Watching for file changes on ${inputFile}`);
         const watcher = fs.watch(inputFile);
@@ -91,4 +104,5 @@ export default async function main(inputFile: string, watch?: boolean) {
             }
         }
     }
+    */
 }

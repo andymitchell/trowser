@@ -33,6 +33,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "chokidar": "^3.6.0",
     "esbuild": "^0.20.0",
     "fs-extra": "^11.2.0",
     "lodash-es": "^4.17.21",

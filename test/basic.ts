@@ -7,6 +7,7 @@ describe('Grouping 1', () => {
     })
 })
 
+
 describe('Async test', () => {
     async function getUserName(userID) {
         return 'bob';

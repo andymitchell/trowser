@@ -11,8 +11,9 @@ interface Window {
     describe(description: string, fn: () => void): void;
     test(name: string, fn: () => void): void;
     expect(value: any): {
-      toBe(expected: any): void;
+        toBe(expected: any): void;
     };
-  }
+}
 
-export {};
+
+export { };
