@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import {isEqual} from 'lodash-es';
+window.Buffer = require('buffer/').Buffer
 
 window.describe = (description: string, fn: () => void) => {
     console.log(description);

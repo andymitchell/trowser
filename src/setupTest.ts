@@ -6,8 +6,29 @@ import * as crypto from 'crypto';
 //import open, { openApp, apps } from 'open';
 import { copy } from 'fs-extra';
 import chokidar = require('chokidar');
-import { Platform } from './types';
 //import chokidar from 'chokidar';
+
+
+/*
+Documenting the pain with pg-mem:
+
+Some tests were using pg-mem, which appears to be designed for node (but claims browser support, as in the end it did). 
+The problem is in the build process: 
+- The theoretically-ok bit: 
+    - esbuild's platform defaults to 'browser', which is what we need.
+    - It has browserify inbuilt, to convert require('fs'), etc. 
+- pg-mem required 'fs' and 'path' (node specifics), and couldn't find them (for some reason, browserify didn't detect/replace this... perhaps because they're in a deno package in pg-mem which wasn't needed after tree-shaking, but were still there to stop esbuild's initial evaluation??!?)
+- pg-mem doesn't import Buffer, it just expects it in the global space (so presumably browserify had no require('buffer') to replace)
+- pg-mem references packages like 'slonik', which it doesn't actually use 
+
+Solutions used
+- Tell esbuild to mark 'fs', 'path', 'slonik' etc. as "external", which means "try to import at runtime" (i.e. don't disrupt my build process). This worked because I don't think pg-mem actually uses 'fs' for any code we use.
+- In globalTestFunctions.ts, it adds 'Buffer' to the global using a shim 
+
+Solutions considered
+- Could have added an extra build step to use browserify again on the outputted esbuild code
+
+*/
 
 const tempDirectory = path.join(os.tmpdir(), 'trowser');
 
@@ -35,16 +56,14 @@ import '${path.resolve(inputFile)}';`;
     
 }
 
-async function bundleEntryPoint(entryPointPath: string, platform?: Platform) {
+async function bundleEntryPoint(entryPointPath: string) {
     const config:esbuild.BuildOptions = {
         entryPoints: [entryPointPath],
         outfile: path.join(tempDirectory, 'bundle.js'),
         bundle: true,
         sourcemap: true,
-    }
-    if( platform ) {
-        config.platform = platform;
-        console.log("Building for a different platform: "+platform);
+        external: ['path', 'fs', 'typeorm', 'slonik', 'pg-promise', 'knex', 'kysely', '@mikro-orm/core', '@mikro-orm/postgresql'],
+        
     }
     
     await esbuild.build(config);
@@ -66,9 +85,9 @@ async function openInBrowser(file: string) {
         
 }
 
-async function exec(inputFile: string, open?:boolean, platform?: Platform) {
+async function exec(inputFile: string, open?:boolean) {
     const entryPoint = await createEntryPoint(inputFile);
-    await bundleEntryPoint(entryPoint, platform);
+    await bundleEntryPoint(entryPoint);
     await copyHtml();
     const finalFile = path.join(tempDirectory, 'index.html');
     console.log(`Built ${finalFile}`);
@@ -82,9 +101,9 @@ async function getFileHash(filePath: string): Promise<string> {
     return hash.digest('hex');
 }
 
-export default async function main(inputFile: string, watch?: boolean, platform?: Platform) {
+export default async function main(inputFile: string, watch?: boolean) {
     let fileHash = await getFileHash(inputFile);
-    await exec(inputFile, true, platform);
+    await exec(inputFile, true);
 
     if (watch) {
         console.log(`Watching for file changes in . and its sub directories.`);

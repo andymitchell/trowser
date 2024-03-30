@@ -33,6 +33,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "buffer": "^6.0.3",
     "chokidar": "^3.6.0",
     "esbuild": "^0.20.0",
     "fs-extra": "^11.2.0",
