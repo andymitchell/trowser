@@ -23,6 +23,7 @@
     "build_prepare": "npm run build && npm run pkglint",
     "prepublishOnly": "npm run build_prepare",
     "test_basic": "npx tsup && ./dist/cli.js --file ./test/basic.ts",
+    "test_basic_externalise": "npx tsup && ./dist/cli.js --file ./test/basic.ts --external \"[\\\"fs\\\", \\\"path\\\"]\"",
     "test_basic:watch": "npx tsup && ./dist/cli.js --file ./test/basic.ts --watch",
     "test": ""
   },

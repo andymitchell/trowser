@@ -56,13 +56,13 @@ import '${path.resolve(inputFile)}';`;
     
 }
 
-async function bundleEntryPoint(entryPointPath: string) {
+async function bundleEntryPoint(entryPointPath: string, external:string[]) {
     const config:esbuild.BuildOptions = {
         entryPoints: [entryPointPath],
         outfile: path.join(tempDirectory, 'bundle.js'),
         bundle: true,
         sourcemap: true,
-        external: ['path', 'fs', 'typeorm', 'slonik', 'pg-promise', 'knex', 'kysely', '@mikro-orm/core', '@mikro-orm/postgresql'],
+        external
         
     }
     
@@ -85,9 +85,9 @@ async function openInBrowser(file: string) {
         
 }
 
-async function exec(inputFile: string, open?:boolean) {
+async function exec(inputFile: string, external: string[], open?:boolean) {
     const entryPoint = await createEntryPoint(inputFile);
-    await bundleEntryPoint(entryPoint);
+    await bundleEntryPoint(entryPoint, external);
     await copyHtml();
     const finalFile = path.join(tempDirectory, 'index.html');
     console.log(`Built ${finalFile}`);
@@ -101,9 +101,9 @@ async function getFileHash(filePath: string): Promise<string> {
     return hash.digest('hex');
 }
 
-export default async function main(inputFile: string, watch?: boolean) {
+export default async function main(inputFile: string, external: string[], watch?: boolean) {
     let fileHash = await getFileHash(inputFile);
-    await exec(inputFile, true);
+    await exec(inputFile, external, true);
 
     if (watch) {
         console.log(`Watching for file changes in . and its sub directories.`);
@@ -111,7 +111,7 @@ export default async function main(inputFile: string, watch?: boolean) {
 
         watcher.on('change', async (path) => {
             console.log(`${path} file changed`);
-            await exec(inputFile); // Consider whether you want to pass the changed `path` instead of `inputFile` to exec depending on your use case
+            await exec(inputFile, external); // Consider whether you want to pass the changed `path` instead of `inputFile` to exec depending on your use case
         });
     }
 
