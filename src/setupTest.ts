@@ -6,6 +6,7 @@ import * as crypto from 'crypto';
 //import open, { openApp, apps } from 'open';
 import { copy } from 'fs-extra';
 import chokidar = require('chokidar');
+import { Platform } from './types';
 //import chokidar from 'chokidar';
 
 const tempDirectory = path.join(os.tmpdir(), 'trowser');
@@ -34,13 +35,19 @@ import '${path.resolve(inputFile)}';`;
     
 }
 
-async function bundleEntryPoint(entryPointPath: string) {
-    await esbuild.build({
+async function bundleEntryPoint(entryPointPath: string, platform?: Platform) {
+    const config:esbuild.BuildOptions = {
         entryPoints: [entryPointPath],
         outfile: path.join(tempDirectory, 'bundle.js'),
         bundle: true,
-        sourcemap: true
-    });
+        sourcemap: true,
+    }
+    if( platform ) {
+        config.platform = platform;
+        console.log("Building for a different platform: "+platform);
+    }
+    
+    await esbuild.build(config);
 }
 
 async function copyHtml() {
@@ -59,9 +66,9 @@ async function openInBrowser(file: string) {
         
 }
 
-async function exec(inputFile: string, open?:boolean) {
+async function exec(inputFile: string, open?:boolean, platform?: Platform) {
     const entryPoint = await createEntryPoint(inputFile);
-    await bundleEntryPoint(entryPoint);
+    await bundleEntryPoint(entryPoint, platform);
     await copyHtml();
     const finalFile = path.join(tempDirectory, 'index.html');
     console.log(`Built ${finalFile}`);
@@ -75,9 +82,9 @@ async function getFileHash(filePath: string): Promise<string> {
     return hash.digest('hex');
 }
 
-export default async function main(inputFile: string, watch?: boolean) {
+export default async function main(inputFile: string, watch?: boolean, platform?: Platform) {
     let fileHash = await getFileHash(inputFile);
-    await exec(inputFile, true);
+    await exec(inputFile, true, platform);
 
     if (watch) {
         console.log(`Watching for file changes in . and its sub directories.`);
