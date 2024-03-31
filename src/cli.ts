@@ -27,7 +27,7 @@ for (let i = 2; i < process.argv.length; i++) {
         i++;  // Skip the next element, which we've just read
     } else if (process.argv[i] === '--externalise-pg-to-mem') {
         
-        external = [...external, 'path', 'fs', 'net', 'tls', 'crypto', 'stream', 'perf_hooks', 'typeorm', 'slonik', 'pg-promise', 'knex', 'kysely', '@mikro-orm/core', '@mikro-orm/postgresql']
+        external = [...external, 'path', 'fs', 'os', 'net', 'tls', 'crypto', 'stream', 'perf_hooks', 'typeorm', 'slonik', 'pg-promise', 'knex', 'kysely', '@mikro-orm/core', '@mikro-orm/postgresql']
     }
 }
 
