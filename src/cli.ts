@@ -25,7 +25,7 @@ for (let i = 2; i < process.argv.length; i++) {
         external = [...external, ...raw];
         console.log("Set external: ", external);
         i++;  // Skip the next element, which we've just read
-    } else if (process.argv[i] === '--externalise-pg-to-mem') {
+    } else if (process.argv[i] === '--externalise-pg-mem') {
         
         external = [...external, 'path', 'fs', 'os', 'net', 'tls', 'crypto', 'stream', 'perf_hooks', 'typeorm', 'slonik', 'pg-promise', 'knex', 'kysely', '@mikro-orm/core', '@mikro-orm/postgresql']
     }
