@@ -14,7 +14,7 @@ window.test = async (testName: string, fn: () => void | Promise<void>) => {
         await fn();
         console.log(`Test '${testName}' passed OK`);
     } catch (error) {
-        console.error(`Test failed: ${error}`);
+        console.error(`Test '${testName}' failed:\n${error}`);
     }
 }
 
