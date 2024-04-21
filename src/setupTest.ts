@@ -31,7 +31,7 @@ Solutions considered
 
 */
 
-const ESM_MODE = false; // If enable esm, you'd need to modify ../static/index.html to <script src='http://localhost:8081/bundle.js' type="module"></script>
+
 
 const tempDirectory = path.join(os.tmpdir(), 'trowser');
 const tempDeploymentDirectory = `${tempDirectory}/deployment`;
@@ -60,14 +60,14 @@ import '${path.resolve(inputFile)}';`;
     
 }
 
-async function bundleEntryPoint(entryPointPath: string, external:string[]) {
+async function bundleEntryPoint(entryPointPath: string, external:string[], esmMode:boolean) {
     const config:esbuild.BuildOptions = {
         entryPoints: [entryPointPath],
         outfile: path.join(tempDeploymentDirectory, 'bundle.js'),
         bundle: true,
         sourcemap: true,
         external,
-        format: ESM_MODE? 'esm' : 'iife',
+        format: esmMode? 'esm' : 'iife',
         platform: 'browser',
         
         
@@ -76,8 +76,12 @@ async function bundleEntryPoint(entryPointPath: string, external:string[]) {
     await esbuild.build(config);
 }
 
-async function copyHtml() {
-    await copy(absoluteAssetPath('./index.html'), path.join(tempDeploymentDirectory, 'index.html'));
+async function copyHtml(esmMode:boolean) {
+    if( esmMode ) {
+        await copy(absoluteAssetPath('./index.esm.html'), path.join(tempDeploymentDirectory, 'index.html'));
+    } else {
+        await copy(absoluteAssetPath('./index.html'), path.join(tempDeploymentDirectory, 'index.html'));
+    }
 }
 
 async function serveFiles() {
@@ -98,9 +102,9 @@ async function serveFiles() {
     });
 }
 
-async function openInBrowser(file: string) {
+async function openInBrowser(file: string, esmMode: boolean) {
 
-    if( ESM_MODE ) serveFiles();
+    if( esmMode ) serveFiles();
 
     /*
     This would be easier with: 
@@ -113,13 +117,13 @@ async function openInBrowser(file: string) {
         
 }
 
-async function exec(inputFile: string, external: string[], open?:boolean) {
+async function exec(inputFile: string, external: string[], esmMode: boolean, open?:boolean) {
     const entryPoint = await createEntryPoint(inputFile);
-    await bundleEntryPoint(entryPoint, external);
-    await copyHtml();
-    const finalFile = ESM_MODE? "http://localhost:8081/index.html" : path.join(tempDeploymentDirectory, 'index.html');
+    await bundleEntryPoint(entryPoint, external, esmMode);
+    await copyHtml(esmMode);
+    const finalFile = esmMode? "http://localhost:8081/index.html" : path.join(tempDeploymentDirectory, 'index.html');
     console.log(`Built ${finalFile}`);
-    if( open ) await openInBrowser(finalFile);
+    if( open ) await openInBrowser(finalFile, esmMode);
 }
 
 async function getFileHash(filePath: string): Promise<string> {
@@ -129,9 +133,10 @@ async function getFileHash(filePath: string): Promise<string> {
     return hash.digest('hex');
 }
 
-export default async function main(inputFile: string, external: string[], watch?: boolean) {
+export default async function main(inputFile: string, external: string[], watch?: boolean, esmMode?: boolean) {
     let fileHash = await getFileHash(inputFile);
-    await exec(inputFile, external, true);
+    const esmModeRequired = esmMode ?? false;
+    await exec(inputFile, external, esmModeRequired, true);
 
     if (watch) {
         console.log(`Watching for file changes in . and its sub directories.`);
@@ -139,7 +144,7 @@ export default async function main(inputFile: string, external: string[], watch?
 
         watcher.on('change', async (path) => {
             console.log(`${path} file changed`);
-            await exec(inputFile, external); // Consider whether you want to pass the changed `path` instead of `inputFile` to exec depending on your use case
+            await exec(inputFile, external, esmModeRequired); // Consider whether you want to pass the changed `path` instead of `inputFile` to exec depending on your use case
         });
     }
 

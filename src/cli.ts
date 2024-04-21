@@ -7,6 +7,7 @@ import main from './setupTest';
 
 
 let watchMode = false;
+let esmMode = false;
 let fileToWatch = '';
 let external:string[] = [];
 
@@ -28,11 +29,13 @@ for (let i = 2; i < process.argv.length; i++) {
     } else if (process.argv[i] === '--externalise-pg-mem') {
         
         external = [...external, 'path', 'fs', 'os', 'net', 'tls', 'crypto', 'stream', 'perf_hooks', 'typeorm', 'slonik', 'pg-promise', 'knex', 'kysely', '@mikro-orm/core', '@mikro-orm/postgresql', "module", "url", "events", "util", "dns", "string_decoder"]
+    } else if (process.argv[i] === '--esm') {
+        esmMode = true;
     }
 }
 
 if( fileToWatch ) {
-    main(fileToWatch, external, watchMode);
+    main(fileToWatch, external, watchMode, esmMode);
 } else {
     console.log("Usage: npx trowser --file path/to/file.ts [--watch]")
 }
