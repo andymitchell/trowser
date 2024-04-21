@@ -21,13 +21,13 @@ for (let i = 2; i < process.argv.length; i++) {
         const json = process.argv[i + 1];
         console.log("Extenral json: "+json);
         const raw = JSON.parse(json);
-        if( !Array.isArray(raw) || !raw.every(x => typeof x==='string') ) throw new Error(`Externalise needs a list of package names as a json string array, e.g. "['fs']"`)
+        if( !Array.isArray(raw) || !raw.every(x => typeof x==='string') ) throw new Error(`Externalise needs a list of package names as a json string array, e.g. "[\"fs\"]"`)
         external = [...external, ...raw];
         console.log("Set external: ", external);
         i++;  // Skip the next element, which we've just read
     } else if (process.argv[i] === '--externalise-pg-mem') {
         
-        external = [...external, 'path', 'fs', 'os', 'net', 'tls', 'crypto', 'stream', 'perf_hooks', 'typeorm', 'slonik', 'pg-promise', 'knex', 'kysely', '@mikro-orm/core', '@mikro-orm/postgresql']
+        external = [...external, 'path', 'fs', 'os', 'net', 'tls', 'crypto', 'stream', 'perf_hooks', 'typeorm', 'slonik', 'pg-promise', 'knex', 'kysely', '@mikro-orm/core', '@mikro-orm/postgresql', "module", "url", "events", "util", "dns", "string_decoder"]
     }
 }
 

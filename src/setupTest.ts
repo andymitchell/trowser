@@ -31,6 +31,7 @@ Solutions considered
 */
 
 const tempDirectory = path.join(os.tmpdir(), 'trowser');
+const tempDeploymentDirectory = `${tempDirectory}/deployment`;
 
 function absoluteAssetPath(assetFile:string) {
     // __dirname is the script's directory, which when this is compiled will be ./dist 
@@ -42,8 +43,8 @@ async function createEntryPoint(inputFile: string) {
 import '${path.resolve(inputFile)}';`;
 
 
-    await fs.mkdir(tempDirectory, { recursive: true }); // Creates temp directory if it doesn't exist
-    const entryPointPath = path.join(tempDirectory, 'entry.ts');
+    await fs.mkdir(tempDeploymentDirectory, { recursive: true }); // Creates temp directory if it doesn't exist
+    const entryPointPath = path.join(tempDeploymentDirectory, 'entry.ts');
     
     try {
         await fs.writeFile(entryPointPath, content);
@@ -59,9 +60,10 @@ import '${path.resolve(inputFile)}';`;
 async function bundleEntryPoint(entryPointPath: string, external:string[]) {
     const config:esbuild.BuildOptions = {
         entryPoints: [entryPointPath],
-        outfile: path.join(tempDirectory, 'bundle.js'),
+        outfile: path.join(tempDeploymentDirectory, 'bundle.js'),
         bundle: true,
         sourcemap: true,
+        format: 'esm',
         external
         
     }
@@ -70,7 +72,7 @@ async function bundleEntryPoint(entryPointPath: string, external:string[]) {
 }
 
 async function copyHtml() {
-    await copy(absoluteAssetPath('./index.html'), path.join(tempDirectory, 'index.html'));
+    await copy(absoluteAssetPath('./index.html'), path.join(tempDeploymentDirectory, 'index.html'));
 }
 
 async function openInBrowser(file: string) {
@@ -89,7 +91,7 @@ async function exec(inputFile: string, external: string[], open?:boolean) {
     const entryPoint = await createEntryPoint(inputFile);
     await bundleEntryPoint(entryPoint, external);
     await copyHtml();
-    const finalFile = path.join(tempDirectory, 'index.html');
+    const finalFile = path.join(tempDeploymentDirectory, 'index.html');
     console.log(`Built ${finalFile}`);
     if( open ) await openInBrowser(finalFile);
 }
