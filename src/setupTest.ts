@@ -63,8 +63,10 @@ async function bundleEntryPoint(entryPointPath: string, external:string[]) {
         outfile: path.join(tempDeploymentDirectory, 'bundle.js'),
         bundle: true,
         sourcemap: true,
+        external,
         format: 'esm',
-        external
+        platform: 'browser',
+        
         
     }
     
