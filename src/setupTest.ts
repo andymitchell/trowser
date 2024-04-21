@@ -6,6 +6,7 @@ import * as crypto from 'crypto';
 //import open, { openApp, apps } from 'open';
 import { copy } from 'fs-extra';
 import chokidar = require('chokidar');
+import { exec as cpexec } from 'child_process';
 //import chokidar from 'chokidar';
 
 
@@ -77,7 +78,28 @@ async function copyHtml() {
     await copy(absoluteAssetPath('./index.html'), path.join(tempDeploymentDirectory, 'index.html'));
 }
 
+async function serveFiles() {
+    // Set the port for the http-server
+    const port = 8081;
+
+    // Construct the http-server command
+    const serverCommand = `http-server ${tempDeploymentDirectory} -p ${port}`;
+
+    // Execute the command
+    const server = cpexec(serverCommand, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            return;
+        }
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+    });
+}
+
 async function openInBrowser(file: string) {
+
+    serveFiles();
+
     /*
     This would be easier with: 
     import open, {openApp, apps} from 'open';
@@ -93,7 +115,7 @@ async function exec(inputFile: string, external: string[], open?:boolean) {
     const entryPoint = await createEntryPoint(inputFile);
     await bundleEntryPoint(entryPoint, external);
     await copyHtml();
-    const finalFile = path.join(tempDeploymentDirectory, 'index.html');
+    const finalFile = "http://localhost:8081/index.html" //path.join(tempDeploymentDirectory, 'index.html');
     console.log(`Built ${finalFile}`);
     if( open ) await openInBrowser(finalFile);
 }
