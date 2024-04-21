@@ -59,7 +59,7 @@ npm run build_release
 - At time of writing, it only supports `expects().toBe()`.
 - You can add more in ./static/globalTestFunctions.ts
 
-### Moving from commonjs to ESM
+### Moving from commonjs to ESM in the cli script
 - Change tsup.config.ts format to 'esm'
 - Change package.json 'type' to 'module' 
     - You might need to change 'main' to 'module' too, I'm not sure. See https://github.com/frehner/modern-guide-to-packaging-js-library 
@@ -67,3 +67,9 @@ npm run build_release
 ### Converting to Deno
 
 You can probably use `deno-bin` and call it from cli.ts 
+
+### Bundling the test script using ESM 
+
+The main hurdle is that esm files must be served (they can't run as files). 
+- Enable ESM_MODE in setupTest.ts
+- In index.html, point it to http://localhost:8081/bundle.js instead

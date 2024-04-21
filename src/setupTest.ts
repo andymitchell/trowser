@@ -31,6 +31,8 @@ Solutions considered
 
 */
 
+const ESM_MODE = false; // If enable esm, you'd need to modify ../static/index.html to <script src='http://localhost:8081/bundle.js' type="module"></script>
+
 const tempDirectory = path.join(os.tmpdir(), 'trowser');
 const tempDeploymentDirectory = `${tempDirectory}/deployment`;
 
@@ -65,7 +67,7 @@ async function bundleEntryPoint(entryPointPath: string, external:string[]) {
         bundle: true,
         sourcemap: true,
         external,
-        format: 'esm',
+        format: ESM_MODE? 'esm' : 'iife',
         platform: 'browser',
         
         
@@ -98,7 +100,7 @@ async function serveFiles() {
 
 async function openInBrowser(file: string) {
 
-    serveFiles();
+    if( ESM_MODE ) serveFiles();
 
     /*
     This would be easier with: 
@@ -115,7 +117,7 @@ async function exec(inputFile: string, external: string[], open?:boolean) {
     const entryPoint = await createEntryPoint(inputFile);
     await bundleEntryPoint(entryPoint, external);
     await copyHtml();
-    const finalFile = "http://localhost:8081/index.html" //path.join(tempDeploymentDirectory, 'index.html');
+    const finalFile = ESM_MODE? "http://localhost:8081/index.html" : path.join(tempDeploymentDirectory, 'index.html');
     console.log(`Built ${finalFile}`);
     if( open ) await openInBrowser(finalFile);
 }
