@@ -9,6 +9,7 @@ let runnable2 = false;
 beforeAll((done) => {
     setTimeout(() => {
         runnable1 = true;
+        debugger;
         done();
     }, 100);
 })
