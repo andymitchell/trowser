@@ -1,6 +1,6 @@
 {
   "name": "@andyrmitchell/trowser",
-  "version": "0.1.25",
+  "version": "0.2.0",
   "description": "Run a test script in the browser",
   "bin": {
     "trowser": "./dist/cli.js"
