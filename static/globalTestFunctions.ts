@@ -85,7 +85,7 @@ window.describe = (description: string, fn: () => void) => {
     fn();
 }
 
-window.test = async (testName: string, fn: () => void | Promise<void>) => {
+window.test = async (testName: string, fn: () => void | Promise<void>, timeout_ms:number = 5000) => {
     const state:{trigger?:Function} = {};
     testPromises.push(new Promise(resolve => {
         state.trigger = resolve;
@@ -94,7 +94,13 @@ window.test = async (testName: string, fn: () => void | Promise<void>) => {
     await canStartTest();
     try {
         console.log(`Testing '${testName}'`);
+
+        const timeoutID = setTimeout(() => {
+            console.error(`Test '${testName}' timed out`);
+        }, timeout_ms);
+
         await fn();
+        clearTimeout(timeoutID);
         console.log(`Test '${testName}' passed OK`);
     } catch (error) {
         console.error(`Test '${testName}' failed:\n${error}`);
