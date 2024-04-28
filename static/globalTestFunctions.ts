@@ -42,7 +42,6 @@ window.beforeAll = async (callback:(done?:Function) => void | Promise<void>, tim
     if (result instanceof Promise) {
         beforeAllPromises.push(result);
         await result;
-        debugger;
         state.clearTimeout();
     } else {
         //debugger;
